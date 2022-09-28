@@ -1,6 +1,6 @@
 import telebot
 from telebot import types
-import datetime as dt
+import time
 
 bot = telebot.TeleBot('1898710807:AAHzsje09qxhkB6jlfI3cjlT7QzSJHBFXhE')
 # real 1898710807:AAHzsje09qxhkB6jlfI3cjlT7QzSJHBFXhE
@@ -118,12 +118,26 @@ def mess(message):
         bot.send_message(message.chat.id, message_text, reply_markup=markup, parse_mode='Markdown', disable_web_page_preview=True)
 
     elif get_message_bot == "Сделать заказ":
-        bot.send_message(message.chat.id, 'На этом моменте можно было реализовать отправку заказа тебе в чат (получается чат твоего бота, но на твой аккаунт) или в отдельную группу.'
-                                          'Все заказы можно было бы промаркировать #хэштегами, чтобы было удобнее сортить по группе заказов.\n\n'
-                                          'Можно добавить нормальный каталог товаров, просто уйдет время.\n\n'
-                                          'Можно сделать минимальную статистику, чтобы через бота устраивать рассылки всем людям которые когда-то на него заходили и не заблокировали бота.')
-    else:
-        bot.send_message(message.chat.id, "🤖 Я пока не разговариваю, но быстро учась!")
-bot.polling(none_stop=True)
+        bot.send_message(message.chat.id,
+                         "Просто напишите свое сообщение и наш менеджер свяжется с вами в ближайшее время!\n\n"
+                         "Напишите: 0, чтобы отменить команду!", parse_mode='Markdown')
 
+        @bot.message_handler(content_types=['text'])
+        def message_input(message):
+            text_message = message.text
+            if text_message != '0':
+                bot.send_message(452085264, text_message, parse_mode='Markdown')
+                bot.send_message(message.chat.id, f" 🤖 Я отправил сообщение, ждем ответов.", parse_mode='Markdown')
+
+
+        bot.register_next_step_handler(message, message_input)
+
+
+if __name__ == '__main__':
+    while True:
+        try:
+            bot.polling(none_stop=True)
+        except Exception as e:
+            time.sleep(3)
+            print(e)
 
